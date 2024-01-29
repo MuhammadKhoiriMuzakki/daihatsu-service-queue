@@ -22,6 +22,7 @@ import { query } from "../../lib/db";
             values: [],
         });
         res.status(200).json({ queries: queue });
+        
     }
 
     if (req.method === "POST"){
@@ -33,9 +34,10 @@ import { query } from "../../lib/db";
 
         if (getQueueInDate.length <= 0 ){
             let initTime = '08:00:00'
+            let queue_number = 1
             const addQueue = await query({
-                query: "INSERT INTO queue_data ( name , plat_number, car_type , arrival_date , arrival_time , complaint ) VALUES ( ? , ? , ? , ? , ? , ? )",
-                values: [ req.body.customer_name , req.body.plat_number , req.body.car_type , req.body.arrival_date , initTime , "TEST API INPUT" ]
+                query: "INSERT INTO queue_data ( name , telp , plat_number, car_type , arrival_date , arrival_time , complaint , queue_number ) VALUES ( ? , ? , ? , ? , ? , ? , ? , ?)",
+                values: [ req.body.customer_name , req.body.telp , req.body.plat_number , req.body.car_type , req.body.arrival_date , initTime , req.body.complaint , queue_number ]
             })
     
             let queue = []
@@ -57,11 +59,12 @@ import { query } from "../../lib/db";
             }
     
             // res.status(200).json({ response: { message: message, queue: queue } });
-        } else if (getQueueInDate.length > 10){
+        } else if (getQueueInDate.length > 8){
             // Max 10 Mobil
             let queue = []
             queue = {
                 name : req.body.customer_name,
+                telp : req.body.telp,
                 plat_number : req.body.plat_number,
                 car_type : req.body.car_type,
                 arrival_date : req.body.arrival_date,
@@ -88,12 +91,14 @@ import { query } from "../../lib/db";
             const getHourPlusOne = parseInt(splitArrivalTime[0]) + 1
             const newGeneratedTime = new String(getHourPlusOne.toString() + ":" + splitArrivalTime[1]+ ":" + splitArrivalTime[2])
     
+            const getQueueNumber = parseInt(getQueue[0].queue_number)
+            const QueueNumberAdd = getQueueNumber + 1
             
             // const arrivalTime = date.toTimeString()
     
             const addQueue = await query({
-                query: "INSERT INTO queue_data ( name , plat_number, car_type , arrival_date , arrival_time , complaint ) VALUES ( ? , ? , ? , ? , ? , ? )",
-                values: [ req.body.customer_name , req.body.plat_number , req.body.car_type , req.body.arrival_date , newGeneratedTime , req.body.complaint ]
+                query: "INSERT INTO queue_data ( name , telp , plat_number, car_type , arrival_date , arrival_time , complaint , queue_number ) VALUES ( ? , ? , ? , ? , ? , ? , ? , ?)",
+                values: [ req.body.customer_name , req.body.telp , req.body.plat_number , req.body.car_type , req.body.arrival_date , newGeneratedTime , req.body.complaint , QueueNumberAdd ]
             })
     
             let queue = []
@@ -105,6 +110,7 @@ import { query } from "../../lib/db";
     
             queue = {
                 name : req.body.customer_name,
+                telp : req.body.telp,
                 plat_number : req.body.plat_number,
                 car_type : req.body.car_type,
                 arrival_date : req.body.arrival_date,

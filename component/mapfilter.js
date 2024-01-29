@@ -1,9 +1,11 @@
 import React from 'react'
 
-export default function time(timeString) {
+const mapfilter = () => {
   return (
     <div>
       
     </div>
   )
 }
+
+export default mapfilter

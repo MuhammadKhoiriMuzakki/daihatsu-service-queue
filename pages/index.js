@@ -1,11 +1,13 @@
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 import DaihatsuLogo from '../public/Daihatsu-Logo.wine__1_-removebg-preview.png'
+import viewList from  '../public/view-list.svg'
 import { useEffect, useState } from 'react'
 import { useQueueState } from '../store/QueueState'
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap'
 import { useMutation, useQuery } from 'react-query'
 import jsPDF from 'jspdf'
+import { useRouter } from 'next/router'
 
 
 export default function Home() {
@@ -16,6 +18,12 @@ export default function Home() {
   const [ showErrorModal , setShowErrorModal ] = useState(false)
   const toggleError = () => setShowErrorModal(!showErrorModal)
   const toggle = () => setShowModal(!showModal);
+  const { listLock , listLockUpdate } = useQueueState((state)=>state)
+  
+  useEffect(()=>{
+    listLockUpdate(false)
+
+  },[])
 
 
   useEffect(()=>{
@@ -80,23 +88,27 @@ export default function Home() {
     
     doc.setFont("Helvetica","Oblique")
     doc.setFontSize(11)
-    doc.text( "Nama" , 30 , 95)
-    doc.text( "Plat Nomor" , 30 ,135)
-    doc.text( "Jenis Mobil" , 160 , 135 )
-    doc.text( "Tanggal Kedatangan" , 30 , 175 )
-    doc.text( "Jam Kedatangan" , 160, 175 )
-    doc.text( "Keluhan" , 30, 215 )
+    doc.text( "No. Urut" , 30,95)
+    doc.text( "Nama" , 30 , 135)
+    doc.text( "telp" , 160 , 135)
+    doc.text( "Plat Nomor" , 30 ,175)
+    doc.text( "Jenis Mobil" , 160 , 175 )
+    doc.text( "Tanggal Kedatangan" , 30 , 215 )
+    doc.text( "Jam Kedatangan" , 160, 215 )
+    doc.text( "Keluhan" , 30, 255 )
 
     
     doc.setFont("Helvetica", "normal")
     doc.setFontSize(11)
     
-    doc.text( resp.name , 30 , 110)
-    doc.text( resp.plat_number , 30 ,150)
-    doc.text( resp.car_type , 160 , 150 )
-    doc.text( resp.arrival_date , 30 , 190 )
-    doc.text( resp.arrival_time , 160, 190 )
-    doc.text( resp.complaint , 30, 230 )
+    doc.text( resp.queue_number , 30 , 110)
+    doc.text( resp.name , 30 , 150)
+    doc.text( resp.telp , 160 , 150)
+    doc.text( resp.plat_number , 30 ,190)
+    doc.text( resp.car_type , 160 , 190 )
+    doc.text( resp.arrival_date , 30 , 230 )
+    doc.text( resp.arrival_time , 160, 230 )
+    doc.text( resp.complaint , 30, 270 )
     // doc.text( respQueueData.customer_name , 30 , 110)
     // doc.text( respQueueData.plat_number , 30 ,150)
     // doc.text( respQueueData.car_type , 160 , 150 )
@@ -110,17 +122,28 @@ export default function Home() {
     // doc.save("Bukti_daftar_servis_daihatsu");
     doc.autoPrint()
   }
+
+  const router = useRouter()
   console.log(resp)
   console.log(respQueueData)
   console.log(queueData)
   return (
     <>
       <nav className="navbar bg-body-tertiary shadow">
-        <div className="container-fluid">
+        <div className="container-fluid mx-lg-4">
           <a className="navbar-brand" href="/">
             <img src={DaihatsuLogo.src} alt="Logo" width={180} height={40}  />
             {/* Bootstrap */}
           </a>
+          <button className='border-dark rounded p-1 px-3 d-flex align-items-center gap-2' onClick={(e)=> {e.preventDefault();router.push("/list-lock")}}>
+            {/* <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 0 1 0 3.75H5.625a1.875 1.875 0 0 1 0-3.75Z" />
+            </svg> */}
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-lines-fill" viewBox="0 0 16 16">
+              <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5 6s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zM11 3.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5m.5 2.5a.5.5 0 0 0 0 1h4a.5.5 0 0 0 0-1zm2 3a.5.5 0 0 0 0 1h2a.5.5 0 0 0 0-1zm0 3a.5.5 0 0 0 0 1h2a.5.5 0 0 0 0-1z"/>
+            </svg>
+            List
+          </button>
         </div>
       </nav>
       <div className='p-1 mt-5 container-fluid'>
@@ -129,13 +152,18 @@ export default function Home() {
         
           <div className='shadow border border-1 border-primary-subtle rounded top-20 p-5'>
             <div className='my-2 mb-4 px-2 border-start border-4 border-danger'>
-              <h3>Pendaftaran Servis</h3>
+              <h3 className='mb-0'>Pendaftaran Servis</h3>
+              <h5 className='text-primary'>Tunas Daihatsu Mampang</h5>
             </div>
             {/* Form */}
             <form onSubmit={(e)=>{e.preventDefault(); addQueue()}}>
               <div className="mb-3 form-floating">
                 <input type="text" className="form-control" id="customerNameInput" placeholder="" value={queueData?.customer_name} required onChange={(e)=>{e.preventDefault; queueInput("customer_name" , e.target.value)}}/>
                 <label htmlFor="customerNameInput" className="form-label">Nama</label>
+              </div>
+              <div className="mb-3 form-floating">
+                <input type="text" className="form-control" id="customerTelpInput" placeholder="" value={queueData?.telp} required onChange={(e)=>{e.preventDefault; queueInput("telp" , e.target.value)}}/>
+                <label htmlFor="customerTelpInput" className="form-label">Telp</label>
               </div>
               <>
                 <div className='d-md-flex gap-3'>
@@ -168,7 +196,7 @@ export default function Home() {
               </div>
               <div className="mb-3 form-floating">
                 <textarea type="text" className="form-control" id="complaintInput" placeholder="" value={queueData?.complaint} required onChange={(e)=>{e.preventDefault; queueInput("complaint" , e.target.value)}}/>
-                <label htmlFor="complaintInput" className="form-label">Keluhan</label>
+                <label htmlFor="complaintInput" className="form-label">Keperluan</label>
               </div>
               <div className='d-flex justify-content-end pt-2'>
                 <button className='p-2 px-5 btn btn-danger' type='submit'>Daftar</button>

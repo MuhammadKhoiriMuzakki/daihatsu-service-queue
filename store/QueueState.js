@@ -6,6 +6,7 @@ export const useQueueState = create(
         (set, get) => ({
             queueData : {
                 customer_name : "",
+                telp : "",
                 plat_number : "",
                 car_type : "",
                 arrival_date : "",
@@ -22,6 +23,7 @@ export const useQueueState = create(
             queueInputReset : () => {
                 let initQueueData = {
                     customer_name : "",
+                    telp : "",
                     plat_number : "",
                     car_type : "",
                     arrival_date : "",
@@ -33,6 +35,7 @@ export const useQueueState = create(
             },
             respQueueData : {
                 customer_name : "",
+                telp: "",
                 plat_number : "",
                 car_type : "",
                 arrival_date : "",
@@ -50,6 +53,7 @@ export const useQueueState = create(
             respQueueReset : () => {
                 let initRespQueueData = {
                     customer_name : "",
+                    telp: "",
                     plat_number : "",
                     car_type : "",
                     arrival_date : "",
@@ -58,6 +62,12 @@ export const useQueueState = create(
                 }
                 set(()=>({
                     respQueueData : initRespQueueData
+                }))
+            },
+            listLock : false,
+            listLockUpdate : (value) => {
+                set(()=>({
+                    listLock : value
                 }))
             },
         }),
